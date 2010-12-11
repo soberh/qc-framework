@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>qc</groupId>
+		<artifactId>qc-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>qc-parent/pom.xml</relativePath>
+	</parent>
+	<artifactId>qc-framework</artifactId>
+	<packaging>pom</packaging>
+	<name>qc-framework</name>
+	<modules>
+		<module>qc-parent</module>
+		<module>qc-core</module>
+		<module>qc-orm-hibernate</module>
+		<module>qc-web</module>
+		<module>qc-web-struts</module>
+		
+		<module>qc-jdbc</module>-->
+		<!--<module>qc-test</module>
+	</modules>
+</project>

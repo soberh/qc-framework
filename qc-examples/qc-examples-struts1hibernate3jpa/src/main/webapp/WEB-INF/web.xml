@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="qc-example-struts1" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>qc-example-struts1</display-name>
+
+  	<!-- 文档按如下顺序布局可以保证在web-app_2_3下启动时不会报web.xml不规范的错误：
+  		display-name>description>context-param>filter>filter-mapping>listener>servlet
+  		>servlet-mapping>session-config>welcome-file-list>error-page>taglib
+  	 -->
+
+	<!-- spring config -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring-config.xml</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<!-- Spring 刷新Introspector防止内存泄露 -->
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	
+	<!-- utf-8编码过虑器 -->
+	<filter>
+		<filter-name>characterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>false</param-value>
+		</init-param>
+	</filter>
+	
+	<!-- 禁用缓存过滤器:*.do -->
+	<filter>
+		<filter-name>noCacheFilter</filter-name>
+		<filter-class>qc.web.filter.CacheFilter</filter-class>
+		<init-param>
+			<param-name>expires</param-name>
+			<!--配为0代表禁用缓存-->
+			<param-value>0</param-value>
+		</init-param>
+	</filter>
+	
+	<!-- 缓存过滤器:js、css、图片等文件添加永久缓存(设为10年) -->
+	<filter>
+		<filter-name>foreverCacheFilter</filter-name>
+		<filter-class>qc.web.filter.CacheFilter</filter-class>
+		<init-param>
+			<param-name>expires</param-name>
+			<!--缓存时间配置 ,单位为分钟,配为-1代表永久的缓存-->
+			<param-value>-1</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excludePaths</param-name>
+			<param-value>/oz-platform/apps/module/attachment/*</param-value>
+		</init-param>
+	</filter>
+	
+	<!-- Hibernate Open Session In View filter
+	<filter>
+		<filter-name>osivFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+	</filter>  -->
+	
+	<!-- 对响应进行gzip压缩的过虑器  -->
+	<filter>
+		<filter-name>gzip-filter</filter-name>
+		<filter-class>qc.web.filter.gzip.GzipFilter</filter-class>
+		<!-- 排除某些目录或文件不处理(多个配置间用逗号分隔): 如对于下载文件的url则需要在这里配置排除  -->
+	 	<init-param>
+			<param-name>excludePaths</param-name>
+			<param-value>/attachment*</param-value>
+		</init-param>
+		<!-- 是否启用js、css文件的静态gzip支持 -->
+		<init-param>
+		   	<param-name>enableStaticGzip</param-name>
+		   	<param-value>false</param-value>
+	  </init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>characterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>	
+	<!-- 禁用缓存过滤器:*.do、noCacheFilter -->
+	<filter-mapping>
+		<filter-name>noCacheFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>noCacheFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	
+	<!-- 缓存过滤器:js、css、图片等文件添加永久缓存(设为10年) -->
+	<filter-mapping>
+		<filter-name>foreverCacheFilter</filter-name>
+		<url-pattern>*.css</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>foreverCacheFilter</filter-name>
+		<url-pattern>*.cssgz</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>foreverCacheFilter</filter-name>
+		<url-pattern>*.js</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>foreverCacheFilter</filter-name>
+		<url-pattern>*.jsgz</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>foreverCacheFilter</filter-name>
+		<url-pattern>*.gif</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>foreverCacheFilter</filter-name>
+		<url-pattern>*.jpg</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>foreverCacheFilter</filter-name>
+		<url-pattern>*.png</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>foreverCacheFilter</filter-name>
+		<url-pattern>*.tif</url-pattern>
+	</filter-mapping>
+	
+	<!-- 对响应进行gzip压缩的过虑器：js文件、css文件、*.do返回的html和jsp页面  -->
+	<filter-mapping>
+		<filter-name>gzip-filter</filter-name>
+		<url-pattern>*.js</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>gzip-filter</filter-name>
+		<url-pattern>*.css</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>gzip-filter</filter-name>
+		<url-pattern>*.htm</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>gzip-filter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>gzip-filter</filter-name>
+		<servlet-name>action</servlet-name>
+	</filter-mapping>
+
+	<!-- struts config -->
+	<servlet>
+		<servlet-name>action</servlet-name>
+		<servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+		<init-param>
+			<param-name>config</param-name>
+			<param-value>/WEB-INF/struts-config.xml</param-value>
+		</init-param>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>action</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	
+	<!-- session超时定义(分钟) -->
+	<session-config>
+		<session-timeout>60</session-timeout>
+	</session-config>
+
+	<welcome-file-list>
+		<welcome-file>index.htm</welcome-file>
+	</welcome-file-list>
+
+	<!-- Structs Tag: 如果项目中引用了standard.jar和struts-taglib.jar就不用在这里配置
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-bean</taglib-uri>
+		<taglib-location>/WEB-INF/tlds/struts-bean.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-html</taglib-uri>
+		<taglib-location>/WEB-INF/tlds/struts-html.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-logic</taglib-uri>
+		<taglib-location>/WEB-INF/tlds/struts-logic.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://struts.apache.org/tags-nested</taglib-uri>
+		<taglib-location>/WEB-INF/tlds/struts-nested.tld</taglib-location>
+	</taglib> -->
+</web-app>
