@@ -6,9 +6,7 @@
 <struts-config>
 	<form-beans>
 		<form-bean name="exampleForm" type="org.apache.commons.beanutils.LazyDynaBean">
-			<form-property name="a"
-				type="org.apache.commons.beanutils.LazyDynaBean">
-			</form-property>
+			<form-property name="id" type="java.lang.Long"/>
 		</form-bean>
 	</form-beans>
 
@@ -17,6 +15,7 @@
 			path="/exception/QcException.jsp"></exception>
 	</global-exceptions>
 	<global-forwards>
+		<forward name="error" path="/errors/error.jsp" />
 	</global-forwards>
 
 	<action-mappings>

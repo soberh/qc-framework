@@ -14,12 +14,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * test
  * 扩展BeanUtilsBean使copyProperty方法当value参数为DynaBean时
  * 使用BeanUtilsEx.copyProperties(oldValue, value)方法拷贝属性值，
  * 这让就可以让就可让Domain的嵌套属性支持在ActionForm中也可以使用 LazyDynaBean来定义
  * 
  * @author dragon
- * 
+ * @deprecated
  */
 public class BeanUtilsBeanEx extends org.apache.commons.beanutils.BeanUtilsBean {
 	private Log log = LogFactory.getLog(BeanUtilsBeanEx.class);

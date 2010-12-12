@@ -4,6 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.ContextClassLoaderLocal;
 
+/**test
+ * @author dragon
+ * @deprecated
+ *
+ */
 public class BeanUtilsEx extends org.apache.commons.beanutils.BeanUtils {
 	private static final ContextClassLoaderLocal BEANS_BY_CLASSLOADER = new ContextClassLoaderLocal() {
 		protected Object initialValue() {

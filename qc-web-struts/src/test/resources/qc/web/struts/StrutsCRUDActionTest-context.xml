@@ -12,7 +12,7 @@
         http://www.springframework.org/schema/aop
         http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<!-- 配置crudDao的实现 -->
+	<!-- 配置crudDao、crudService的实现：这里使用的是模拟的内存实现，没有数据库 -->
 	<bean id="crudDao" class="qc.test.CrudDaoMock" />
 	<bean id="crudService" class="qc.core.service.DefaultCrudService"
 		p:crudDao-ref="crudDao" />

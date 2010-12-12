@@ -11,15 +11,15 @@ import qc.core.exception.QcException;
 import qc.core.query.Query;
 
 public class CrudDaoMock implements CrudDao<Example>, SetEntityClass<Example> {
-	private Long id = null;
+	private long id = 0;
 	private Map<String, Example> entities = new HashMap<String, Example>();
 	private Class<Example> entityClass;
 
 	public CrudDaoMock(){
-		Example e = new Example();
-		e.setId(new Long(1));
-		e.setName("name");
-		entities.put("1", e);
+//		Example e = new Example();
+//		e.setId(new Long(1));
+//		e.setName("name");
+//		entities.put("1", e);
 	}
 	public Class<Example> getEntityClass() {
 		return this.entityClass;
@@ -30,7 +30,7 @@ public class CrudDaoMock implements CrudDao<Example>, SetEntityClass<Example> {
 	}
 
 	public Query<Example> createQuery() {
-		return null;
+		return new QueryMock<Example>(this.entities);
 	}
 
 	public void delete(Serializable id) {
@@ -70,8 +70,8 @@ public class CrudDaoMock implements CrudDao<Example>, SetEntityClass<Example> {
 			return;
 		}
 
-		if (entity.getId() < 1) {
-			entity.setId(id++);
+		if (entity.getId() == null) {
+			entity.setId(new Long(++id));
 			entities.put(String.valueOf(entity.getId()), entity);
 		} else {
 			if (entities.containsKey(String.valueOf(entity.getId()))) {

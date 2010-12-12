@@ -17,9 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.DynaActionForm;
 import org.apache.struts.actions.DispatchAction;
 import org.springframework.beans.factory.InitializingBean;
@@ -244,6 +246,7 @@ public class StrutsCRUDAction<T extends Object> extends DispatchAction
 	protected ActionForward gotoFormPage(ActionMapping mapping,
 			ActionForm form, HttpServletRequest request,
 			HttpServletResponse response, boolean readOnly) throws Exception {
+		request.setAttribute("readOnly", readOnly);
 		Serializable id = getEntityId(request, form);
 		T entity = this.getCrudService().load(id);
 
@@ -251,11 +254,14 @@ public class StrutsCRUDAction<T extends Object> extends DispatchAction
 		if (entity != null) {
 			BeanUtils.copyProperties(form, entity);
 		} else {
-			throw new QcException("no entity exist with id '" + id + "'");
+			ActionErrors errors = new ActionErrors();
+			errors.add("password",new ActionMessage("error.entity.notexist",id));
+			saveErrors(request,errors);
+            return mapping.findForward("error");
+			//throw new NotExistsException("no entity exist with id '" + id + "'");
 		}
 
 		// 返回页面
-		request.setAttribute("readOnly", readOnly);
 		String forwardName = getEntityClass().getSimpleName() + "Form";
 		return mapping.findForward(forwardName);
 	}

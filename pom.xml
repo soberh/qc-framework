@@ -17,8 +17,5 @@
 		<module>qc-orm-hibernate</module>
 		<module>qc-web</module>
 		<module>qc-web-struts</module>
-		
-		<module>qc-jdbc</module>-->
-		<!--<module>qc-test</module>
 	</modules>
 </project>
