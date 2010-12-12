@@ -5,6 +5,8 @@ package qc.core.jdbc;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
@@ -16,13 +18,22 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
  * 
  */
 public class SimpleJdbcInsertEx extends SimpleJdbcInsert {
+	private static final Log logger = LogFactory.getLog(SimpleJdbcInsertEx.class);
 
 	public SimpleJdbcInsertEx(DataSource dataSource) {
 		super(dataSource);
 	}
+	public SimpleJdbcInsertEx(DataSource dataSource, String sequence) {
+		super(dataSource);
+		this.setSequence(sequence);
+	}
 
 	public SimpleJdbcInsertEx(JdbcTemplate jdbcTemplate) {
 		super(jdbcTemplate);
+	}
+	public SimpleJdbcInsertEx(JdbcTemplate jdbcTemplate, String sequence) {
+		super(jdbcTemplate);
+		this.setSequence(sequence);
 	}
 
 	//private String insertString;
@@ -63,5 +74,6 @@ public class SimpleJdbcInsertEx extends SimpleJdbcInsert {
 
 	public void setSequence(String sequence) {
 		this.sequence = sequence;
+		logger.info("sequence=" + sequence);
 	}
 }

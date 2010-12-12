@@ -39,6 +39,9 @@
 	</category>
     
 	<!-- this -->
+	<category name="qc.test.TestUtils">
+	  <priority value="INFO" />
+	</category>
 	<category name="qc.orm.hibernate">
 	  <priority value="${logLevel-qc.orm.hibernate}" />
 	</category>

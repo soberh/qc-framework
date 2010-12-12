@@ -11,37 +11,51 @@ import javax.sql.DataSource;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.transaction.annotation.Transactional;
 
 import qc.core.Page;
 import qc.core.dao.CrudDao;
 import qc.core.jdbc.SimpleJdbcInsertEx;
 import qc.core.query.condition.impl.EqualsCondition;
 import qc.test.Example;
+import qc.test.TestUtils;
 
-public abstract class AbstractDaoTest extends
-		AbstractTransactionalJUnit4SpringContextTests {
+@Transactional
+// 基类也要声明这个
+public abstract class AbstractSpringManageDaoTest implements InitializingBean {
+	protected CrudDao<Example> crudDao;
+	protected DataSource dataSource;
+	protected SimpleJdbcTemplate simpleJdbcTemplate;
 	private SimpleJdbcInsert jdbcInsert;
 	private static String uuid = UUID.randomUUID().toString();
 
-	public SimpleJdbcInsert getJdbcInsert() {
-		if (jdbcInsert == null) {
-			jdbcInsert = new SimpleJdbcInsertEx(this.applicationContext
-					.getBean("dataSource", DataSource.class)).withTableName(
-					"qc_example").usingGeneratedKeyColumns("id");
-			// System.out.println("####jdbcInsert=" + jdbcInsert);
-		}
-		return jdbcInsert;
-	}
+	// ==dependency inject
 
-	private CrudDao<Example> crudDao;
+	@Autowired
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
 	@Autowired
 	public void setCrudDao(CrudDao<Example> crudDao) {
 		this.crudDao = crudDao;
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
+		this.jdbcInsert = new SimpleJdbcInsertEx(dataSource,TestUtils.getDbSequence()).withTableName(
+				"qc_example").usingGeneratedKeyColumns("id");
+	}
+
+	// == inner getter
+
+	protected SimpleJdbcInsert getJdbcInsert() {
+		return jdbcInsert;
 	}
 
 	@Test
@@ -199,11 +213,11 @@ public abstract class AbstractDaoTest extends
 		Page<Example> page = q.page(1, 100);
 		Assert.assertNotNull(page);
 		Assert.assertTrue(page.getList() == null || page.getList().isEmpty());
-		Assert.assertEquals(1,page.getPageNo());
-		Assert.assertEquals(100,page.getPageSize());
-		Assert.assertEquals(0,page.getPageCount());
-		Assert.assertEquals(0,page.getTotalCount());
-		Assert.assertEquals(0,page.getFirstResult());
+		Assert.assertEquals(1, page.getPageNo());
+		Assert.assertEquals(100, page.getPageSize());
+		Assert.assertEquals(0, page.getPageCount());
+		Assert.assertEquals(0, page.getTotalCount());
+		Assert.assertEquals(0, page.getFirstResult());
 
 		// 插入1条
 		Long id1 = insertOne("name0");
@@ -212,11 +226,11 @@ public abstract class AbstractDaoTest extends
 		q.condition(new EqualsCondition("id", id1));
 		page = q.page(1, 100);
 		Assert.assertTrue(page.getList() != null && !page.getList().isEmpty());
-		Assert.assertEquals(1,page.getPageNo());
-		Assert.assertEquals(100,page.getPageSize());
-		Assert.assertEquals(1,page.getPageCount());
-		Assert.assertEquals(1,page.getTotalCount());
-		Assert.assertEquals(0,page.getFirstResult());
+		Assert.assertEquals(1, page.getPageNo());
+		Assert.assertEquals(100, page.getPageSize());
+		Assert.assertEquals(1, page.getPageCount());
+		Assert.assertEquals(1, page.getTotalCount());
+		Assert.assertEquals(0, page.getFirstResult());
 
 		// 插入10条
 		for (int i = 0; i < 10; i++)
@@ -224,30 +238,30 @@ public abstract class AbstractDaoTest extends
 		q.condition(new EqualsCondition("name", uuid));
 		page = q.page(1, 100);
 		Assert.assertNotNull(page.getList());
-		Assert.assertEquals(10,page.getList().size());
-		Assert.assertEquals(1,page.getPageNo());
-		Assert.assertEquals(100,page.getPageSize());
-		Assert.assertEquals(1,page.getPageCount());
-		Assert.assertEquals(10,page.getTotalCount());
-		Assert.assertEquals(0,page.getFirstResult());
+		Assert.assertEquals(10, page.getList().size());
+		Assert.assertEquals(1, page.getPageNo());
+		Assert.assertEquals(100, page.getPageSize());
+		Assert.assertEquals(1, page.getPageCount());
+		Assert.assertEquals(10, page.getTotalCount());
+		Assert.assertEquals(0, page.getFirstResult());
 
 		// 第1页
 		page = q.page(1, 5);
-		Assert.assertEquals(5,page.getList().size());
-		Assert.assertEquals(1,page.getPageNo());
-		Assert.assertEquals(5,page.getPageSize());
-		Assert.assertEquals(2,page.getPageCount());
-		Assert.assertEquals(10,page.getTotalCount());
-		Assert.assertEquals(0,page.getFirstResult());
+		Assert.assertEquals(5, page.getList().size());
+		Assert.assertEquals(1, page.getPageNo());
+		Assert.assertEquals(5, page.getPageSize());
+		Assert.assertEquals(2, page.getPageCount());
+		Assert.assertEquals(10, page.getTotalCount());
+		Assert.assertEquals(0, page.getFirstResult());
 
 		// 第2页
 		page = q.page(2, 3);
-		Assert.assertEquals(3,page.getList().size());
-		Assert.assertEquals(2,page.getPageNo());
-		Assert.assertEquals(3,page.getPageSize());
-		Assert.assertEquals(4,page.getPageCount());
-		Assert.assertEquals(10,page.getTotalCount());
-		Assert.assertEquals(3,page.getFirstResult());
+		Assert.assertEquals(3, page.getList().size());
+		Assert.assertEquals(2, page.getPageNo());
+		Assert.assertEquals(3, page.getPageSize());
+		Assert.assertEquals(4, page.getPageCount());
+		Assert.assertEquals(10, page.getTotalCount());
+		Assert.assertEquals(3, page.getFirstResult());
 	}
 
 	/**
@@ -255,15 +269,7 @@ public abstract class AbstractDaoTest extends
 	 * 
 	 * @return 返回主键的值
 	 */
-	private Long insertOne(String name) {
-		Map<String, Object> parameters = new HashMap<String, Object>(1);
-		parameters.put("name", name);
-		Number newId = this.getJdbcInsert().executeAndReturnKey(parameters);
-		Long id = new Long(newId.longValue());
-		Assert.assertTrue(id > 0);
-		// System.out.println(id);
-		return id;
-	}
+	protected abstract Long insertOne(String name);
 
 	// 在oracle中必须指定id的值为hibernate_sequence.nextval，mysql中只需
 	// qc_example(name,code)即可

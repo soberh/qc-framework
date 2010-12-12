@@ -12,8 +12,14 @@
         http://www.springframework.org/schema/aop
         http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-	<!-- 配置数据库连接 org.springframework.beans.factory.config.PropertyPlaceholderConfigurer -->
+	<!--
+		配置数据库连接
+		org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
+	-->
 	<context:property-placeholder location="classpath:db.properties" />
+	<bean class="qc.test.TestUtils">
+		<constructor-arg value="${db.sequence}"/>
+	</bean>
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
 		p:driverClassName="${db.driverClassName}" p:url="${db.url}"
@@ -28,7 +34,7 @@
 		</property>
 		<property name="hibernateProperties">
 			<value>
-				hibernate.dialect=${hibernate.dialect}
+				hibernate.dialect = ${hibernate.dialect}
 				hibernate.show_sql =
 				${hibernate.show_sql}
             </value>

@@ -351,19 +351,23 @@
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<hibernate.version>3.6.0.Final</hibernate.version>
 		<struts.version>1.3.10</struts.version>
-		<!--
-			警示：update/create-drop/create/validate，如果在classpath中有/import.sql文件，
-			hibernate3在启动时会执行
-		-->
-		<hibernate.hbm2ddl.auto>none</hibernate.hbm2ddl.auto>
 
 		<jndi.name>qc</jndi.name>
 		<db.driverClassName>com.mysql.jdbc.Driver</db.driverClassName>
 		<db.url><![CDATA[jdbc:mysql://localhost:3306/qc?useUnicode=true&characterEncoding=UTF-8]]></db.url>
 		<db.username>root</db.username>
 		<db.password>password</db.password>
+		<!--
+			使用oracle数据库时设置为sequence的名称，用于测试中qc.core.jdbc.SimpleJdbcInsertEx插入数据并返回id值
+		-->
+		<db.sequence></db.sequence>
 		<hibernate.dialect>org.hibernate.dialect.MySQLDialect</hibernate.dialect>
 		<hibernate.show_sql>false</hibernate.show_sql>
+		<!--
+			警示：update/create-drop/create/validate，如果在classpath中有/import.sql文件，
+			hibernate3在启动时会执行
+		-->
+		<hibernate.hbm2ddl.auto>none</hibernate.hbm2ddl.auto>
 	</properties>
 
 	<profiles>
@@ -393,6 +397,7 @@
 				<db.url><![CDATA[jdbc:oracle:thin:@localhost:1521:dragon]]></db.url>
 				<db.username>qc</db.username>
 				<db.password>qc</db.password>
+				<db.sequence>hibernate_sequence</db.sequence>
 				<hibernate.dialect>org.hibernate.dialect.Oracle9Dialect</hibernate.dialect>
 			</properties>
 			<dependencies>
