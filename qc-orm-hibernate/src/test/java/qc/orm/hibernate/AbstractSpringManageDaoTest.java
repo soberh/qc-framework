@@ -32,7 +32,6 @@ public abstract class AbstractSpringManageDaoTest implements InitializingBean {
 	protected DataSource dataSource;
 	protected SimpleJdbcTemplate simpleJdbcTemplate;
 	private SimpleJdbcInsert jdbcInsert;
-	private static String uuid = UUID.randomUUID().toString();
 
 	// ==dependency inject
 
@@ -48,8 +47,9 @@ public abstract class AbstractSpringManageDaoTest implements InitializingBean {
 
 	public void afterPropertiesSet() throws Exception {
 		this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
-		this.jdbcInsert = new SimpleJdbcInsertEx(dataSource,TestUtils.getDbSequence()).withTableName(
-				"qc_example").usingGeneratedKeyColumns("id");
+		this.jdbcInsert = new SimpleJdbcInsertEx(dataSource, TestUtils
+				.getDbSequence()).withTableName("qc_example")
+				.usingGeneratedKeyColumns("id");
 	}
 
 	// == inner getter
@@ -69,6 +69,9 @@ public abstract class AbstractSpringManageDaoTest implements InitializingBean {
 		entity = crudDao.load(entity.getId());
 		Assert.assertNotNull(entity);
 		Assert.assertEquals("test1", entity.getName());
+
+		// repeat save
+		crudDao.save(entity);
 	}
 
 	@Test
@@ -85,6 +88,14 @@ public abstract class AbstractSpringManageDaoTest implements InitializingBean {
 	@Test
 	public void delete() {
 		Long id1 = insertOne("name");
+		crudDao.delete(id1);
+		Example entity = crudDao.load(id1);
+		Assert.assertNull(entity);
+	}
+
+	@Test
+	public void delete_notExists() {
+		Long id1 = new Long(Integer.MAX_VALUE);
 		crudDao.delete(id1);
 		Example entity = crudDao.load(id1);
 		Assert.assertNull(entity);
@@ -157,6 +168,7 @@ public abstract class AbstractSpringManageDaoTest implements InitializingBean {
 		Assert.assertEquals(1, q.count());
 
 		// 插入10条
+		String uuid = UUID.randomUUID().toString();
 		for (int i = 0; i < 10; i++)
 			insertOne(uuid);
 		q.condition(new EqualsCondition("name", uuid));
@@ -196,12 +208,30 @@ public abstract class AbstractSpringManageDaoTest implements InitializingBean {
 		Assert.assertTrue(list.size() == 1);
 
 		// 插入10条
+		String uuid = UUID.randomUUID().toString();
 		for (int i = 0; i < 10; i++)
 			insertOne(uuid);
 		q.condition(new EqualsCondition("name", uuid));
 		list = q.list();
 		Assert.assertNotNull(list);
 		Assert.assertTrue(list.size() == 10);
+	}
+
+	@Test
+	public void query_overList() {
+		// 插入10条，然后查询超过这些数据范围的页
+		String uuid = UUID.randomUUID().toString();
+		for (int i = 0; i < 10; i++)
+			insertOne(uuid);
+		qc.core.query.Query<Example> q = crudDao.createQuery();
+		q.condition(new EqualsCondition("name", uuid));
+		List<Example> list = q.list(1, 10);
+		Assert.assertNotNull(list);
+		Assert.assertEquals(10, list.size());
+
+		list = q.list(2, 10);
+		Assert.assertNotNull(list);
+		Assert.assertEquals(0, list.size());
 	}
 
 	@Test
@@ -233,6 +263,7 @@ public abstract class AbstractSpringManageDaoTest implements InitializingBean {
 		Assert.assertEquals(0, page.getFirstResult());
 
 		// 插入10条
+		String uuid = UUID.randomUUID().toString();
 		for (int i = 0; i < 10; i++)
 			insertOne(uuid);
 		q.condition(new EqualsCondition("name", uuid));
@@ -262,6 +293,33 @@ public abstract class AbstractSpringManageDaoTest implements InitializingBean {
 		Assert.assertEquals(4, page.getPageCount());
 		Assert.assertEquals(10, page.getTotalCount());
 		Assert.assertEquals(3, page.getFirstResult());
+	}
+
+	@Test
+	public void query_overPage() {
+		// 插入10条，然后查询超过这些数据范围的页
+		qc.core.query.Query<Example> q = crudDao.createQuery();
+		String uuid = UUID.randomUUID().toString();
+		for (int i = 0; i < 10; i++)
+			insertOne(uuid);
+		q.condition(new EqualsCondition("name", uuid));
+		Page<Example> page = q.page(1, 5);
+		Assert.assertNotNull(page.getList());
+		Assert.assertEquals(5, page.getList().size());
+		Assert.assertEquals(1, page.getPageNo());
+		Assert.assertEquals(5, page.getPageSize());
+		Assert.assertEquals(2, page.getPageCount());
+		Assert.assertEquals(10, page.getTotalCount());
+		Assert.assertEquals(0, page.getFirstResult());
+
+		// 第1页
+		page = q.page(3, 5);
+		Assert.assertEquals(0, page.getList().size());
+		Assert.assertEquals(3, page.getPageNo());
+		Assert.assertEquals(5, page.getPageSize());
+		Assert.assertEquals(2, page.getPageCount());
+		Assert.assertEquals(10, page.getTotalCount());
+		Assert.assertEquals(10, page.getFirstResult());
 	}
 
 	/**
