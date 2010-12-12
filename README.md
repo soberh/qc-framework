@@ -1,16 +1,15 @@
-﻿common capsulation for generic crud. 
+common capsulation for generic crud. 
 all packages implement with unit test.
 all packages depend on spring3.
 
-packages
-  qc-parent
+qc-parent
     all dependances manage config.
-  qc-core
+qc-core
     common interfaces for generic crud.
-  qc-orm-hibernate
-    implement crud dao inteface with hibernate3 and hibernate3's jpa.
+qc-orm-hibernate
+    implement crud dao interface with hibernate3 and hibernate3's jpa.
     
-  qc-web
+qc-web
     common tools for web packages.
-  qc-web-struts
+qc-web-struts
     a generic crud operations for struts1.3's actin.
