@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<!-- Configuration Spring plugin. -->
+	<constant name="struts.objectFactory"
+		value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
+		
+	<!-- Configuration for the default package. -->
+	<package name="default" extends="struts-default">
+		<!-- Default interceptor stack. -->
+		<default-interceptor-ref name="paramsPrepareParamsStack" />
+
+		<action name="example" class="example" method="open">
+			<result name="input">/example/ExampleForm.jsp</result>
+			<result name="error">/WEB-INF/jsp/error.jsp</result>
+		</action>
+		<action name="example" class="example" method="edit">
+			<result name="success">/example/ExampleForm.jsp</result>
+			<result name="error">/WEB-INF/jsp/error.jsp</result>
+		</action>
+		<action name="example" class="example" method="view">
+			<result name="success">/example/ExampleView.jsp</result>
+			<result name="error">/WEB-INF/jsp/error.jsp</result>
+		</action>
+		<action name="example" class="example" method="delete">
+		</action>
+		<action name="example" class="example" method="save">
+		</action>
+	</package>
+</struts>
