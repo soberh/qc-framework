@@ -6,7 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <html>
 <head>
-<title>视图</title>
+<title><bean:message key="example.title.view"/></title>
 <script type="text/javascript">var contextPath="${request.contextPath}";</script>
 <link rel="stylesheet" type="text/css"
 	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/themes/smoothness/jquery-ui.css" />
@@ -30,8 +30,8 @@
 </style>
 </head>
 <body>
-<div>视图：<input type="button" id="btnRefresh" value="刷新" /><input
-	type="button" id="btnNew" value="新建" /></div>
+<div><bean:message key='example.title.view'/>：<input type="button" id="btnRefresh" value="<bean:message key='button.refresh'/>" /><input
+	type="button" id="btnNew" value="<bean:message key='button.new'/>" /></div>
 <table style="width: 600px; border: 1px solid black; margin: 4px;"
 	cellpadding="4" cellspacing="0">
 	<tr style="background-color: #ccc;">
@@ -50,8 +50,8 @@
 			<td class="rborder bborder"><bean:write name="example"
 				property="code" /></td>
 			<td style="text-align: center;" class="bborder"><input
-				type="button" name="btnDelete" value="删除" /><input type="button"
-				name="btnEdit" value="修改" /></td>
+				type="button" name="btnDelete" value="<bean:message key='button.delete'/>" /><input type="button"
+				name="btnEdit" value="<bean:message key='button.modify'/>" /></td>
 		</tr>
 	</logic:iterate>
 </table>

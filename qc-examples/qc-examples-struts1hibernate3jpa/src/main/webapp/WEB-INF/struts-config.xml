@@ -25,7 +25,7 @@
 			<forward name="ExampleForm" path="/example/struts1/ExampleForm.jsp" />
 		</action>
 	</action-mappings>
-
+	
 	<!--
 		配了controller后，上面的action配置就不用配type的值了，否则action必须配置
 		type="org.springframework.web.struts.DelegatingActionProxy"
@@ -34,6 +34,15 @@
 		<set-property property="processorClass"
 			value="org.springframework.web.struts.DelegatingRequestProcessor" />
 	</controller>
+	
+	<!--
+		文件默认要放在classes目录下，parameter参数可以带包名
+		i18n配置：applicationXXX.propeoties,如
+		application_zh_CN.properties
+		application_zh.properties
+		application.properties
+	-->
+	<message-resources parameter="application"/>
 
 	<!--
 		如果没有配置contextConfigLocation属性，则默认加载文件为"/WEB-INF/[web.xml中定义的servlet的名称]-servlet.xml"。
